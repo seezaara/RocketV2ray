@@ -1,0 +1,39 @@
+{
+  "name": "RocketV2ray",
+  "version": "1.0.0",
+  "description": "v2ray base vpn for windows",
+  "main": "index.js",
+  "dependencies": {
+    "default-gateway": "^6.0.3"
+  },
+  "devDependencies": {
+    "electron": "^23.1.1",
+    "electron-builder": "^23.6.0"
+  },
+  "scripts": {
+    "dist": "electron-builder --x64",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "build": {
+    "productName": "Rocket V2ray",
+    "appId": "Rocket.V2ray.com",
+    "win": {
+      "target": "nsis",
+      "icon": "www/icon.ico",
+      "requestedExecutionLevel": "highestAvailable"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": true,
+      "allowToChangeInstallationDirectory": true
+    },
+    "portable": {
+      "artifactName": "Rocket V2ray.exe"
+    },
+    "extraResources": [
+      "core/bin/*"
+    ]
+  }
+}
