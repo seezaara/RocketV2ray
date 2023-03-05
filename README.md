@@ -17,9 +17,8 @@
 
 # لایسنس
  <p>
-    <img width="32px" src="https://raw.githubusercontent.com/seezaara/RocketV2ray/main/doc/logo.png"><b> ساخته شده توسط سیزارا</b>
-</p>
-[کانال یوتیوب](https://www.youtube.com/@seezaara_fa)
+    <img width="32px" src="https://raw.githubusercontent.com/seezaara/RocketV2ray/main/doc/logo.png"><a href="https://www.youtube.com/@seezaara_fa">ساخته شده توسط سیزارا</a>
+</p> 
 
 # RocketV2ray
 TUN/TAP interface vpn application for window by electron base on v2ray core
@@ -32,7 +31,7 @@ for run just use `electorn .` and for buil use `npm run dist`.
 
 # licence
  <p>
-    <img width="32px" src="https://raw.githubusercontent.com/seezaara/RocketV2ray/main/doc/logo.png"><b> created by seezaara</b>
-</p>
-[Youtube channel](https://www.youtube.com/@seezaara)
+    <img width="32px" src="https://raw.githubusercontent.com/seezaara/RocketV2ray/main/doc/logo.png"><a href="https://www.youtube.com/@seezaara">created by seezaara</a>
+</p> 
+
 
