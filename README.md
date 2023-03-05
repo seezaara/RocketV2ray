@@ -1,3 +1,11 @@
+<p align="center" width="100%">
+    <img src="https://raw.githubusercontent.com/seezaara/RocketV2ray/main/doc/icon.ico"> 
+</p>
+
+<p align="center" width="100%">  
+ <b><font size="6">RocketV2ray</font></b>
+</p> 
+
 # راهنمای فارسی
 نرم افزار Rocketv2ray یک وی پی ان v2ray برای ویندوز ساخته شده با الکترون بر اساس v2ray core
 
