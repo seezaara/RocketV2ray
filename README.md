@@ -12,10 +12,13 @@
 # نصب بر روی ویندوز
 فقط به [صفحه انتشار](https://github.com/seezaara/RocketV2ray/releases/tag/RocketV2ray) بروید و آخرین نسخه را دانلود کنید و آن را نصب کنید
 
+[راهنمای نصب و کار با برنامه در یوتیوب](https://www.youtube.com/watch?v=J-YYk90SJDI) 
+
 # اجرا و ساخت سورس
 برای اجرا فقط از `electorn .` و برای ساخت از `npm run dist` استفاده کنید.
 
-[ساختار سورس برنامه در یوتیوب توضیح داده شده](https://www.youtube.com/watch?v=J-YYk90SJDI) 
+[ساختار سورس برنامه در یوتیوب توضیح داده شده](https://www.youtube.com/watch?v=vIbtTZ_Jz88) 
+
 
 # لایسنس
  <p>
@@ -28,11 +31,12 @@ TUN/TAP interface vpn application for window by electron base on v2ray core
 # install on window
 just go to [release page](https://github.com/seezaara/RocketV2ray/releases/tag/RocketV2ray) and download last version
 
-[source structure of program explained on YouTube](https://www.youtube.com/watch?v=J-YYk90SJDI) 
-
+[Installation guide and how it works on YouTube](https://www.youtube.com/watch?v=J-YYk90SJDI) 
 
 # run and build source
 for run just use `electorn .` and for buil use `npm run dist`.
+
+[source structure of program explained on YouTube](https://www.youtube.com/watch?v=vIbtTZ_Jz88) 
 
 # licence
  <p>
