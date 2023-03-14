@@ -15,6 +15,8 @@
 # اجرا و ساخت سورس
 برای اجرا فقط از `electorn .` و برای ساخت از `npm run dist` استفاده کنید.
 
+[ساختار سورس برنامه در یوتیوب توضیح داده شده](https://www.youtube.com/watch?v=J-YYk90SJDI) 
+
 # لایسنس
  <p>
     <img width="32px" src="https://raw.githubusercontent.com/seezaara/RocketV2ray/main/doc/logo.png"><a href="https://www.youtube.com/@seezaara_fa">ساخته شده توسط سیزارا</a>
@@ -25,6 +27,9 @@ TUN/TAP interface vpn application for window by electron base on v2ray core
 
 # install on window
 just go to [release page](https://github.com/seezaara/RocketV2ray/releases/tag/RocketV2ray) and download last version
+
+[source structure of program explained on YouTube](https://www.youtube.com/watch?v=J-YYk90SJDI) 
+
 
 # run and build source
 for run just use `electorn .` and for buil use `npm run dist`.
