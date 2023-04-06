@@ -22,7 +22,14 @@
 
 
 # نصب بر روی ویندوز
-فقط به [صفحه انتشار](https://github.com/seezaara/RocketV2ray/releases/tag/RocketV2ray) بروید و آخرین نسخه را دانلود کنید و آن را نصب کنید
+
+لینک مستقیم اخرین نسخه رو میتونیتد از [اینجا](https://github.com/seezaara/RocketV2ray/releases/latest/download/Rocket.V2ray.Setup.exe) کپی کنید
+
+یا
+
+به [صفحه انتشار](https://github.com/seezaara/RocketV2ray/releases/tag/RocketV2ray) بروید و آخرین نسخه را دانلود کنید و آن را نصب کنید .
+
+
 
 [راهنمای نصب و کار با برنامه در یوتیوب](https://www.youtube.com/watch?v=J-YYk90SJDI) 
 
@@ -53,6 +60,11 @@ And then the configuration is entered in the configuration list and you can sele
 
 
 # install on window
+
+You can copy the direct link of the latest version from [here](https://github.com/seezaara/RocketV2ray/releases/latest/download/Rocket.V2ray.Setup.exe).
+
+Or
+
 just go to [release page](https://github.com/seezaara/RocketV2ray/releases/tag/RocketV2ray) and download last version
 
 [Installation guide and how it works on YouTube](https://www.youtube.com/watch?v=J-YYk90SJDI) 
