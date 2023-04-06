@@ -2,6 +2,7 @@ const fs = require("fs")
 const os = require("os")
 const v2c = require("./v2c")
 const c2v = require("./c2v")
+const dns = require('dns');
 const defaultGateway = require('default-gateway');
 const { spawn } = require('child_process');
 
@@ -24,7 +25,10 @@ var config = {
         '172.16.0.0/16',
         '192.168.0.0/16',
     ],
-    dns: "1.1.1.1",
+    dns: [
+        "1.1.1.1",
+        "8.8.8.8"
+    ],
     gateway: "10.0.61.1",
     address: "10.0.61.2",
     vpn: true
@@ -67,20 +71,16 @@ function temp_id() { // min and max included
         Math.floor(Math.random() * (0xffff - 0x1000) + 0x1000).toString(16) + "-" +
         Math.floor(Math.random() * (0xffffffffffff - 0x100000000000) + 0x100000000000).toString(16)
 }
-async function start(url, cb) {
+async function start(configjson, cb) {
     // ==============================
     try {
-        // var test = ""
-        var datavmess = v2c.parse(url)
-        if (!datavmess)
+        if (!configjson)
             cb(false)
-        vpnadress = datavmess.add
-
+        vpnadress = await lookupPromise(c2v.c2v(configjson, false).add)
         var config_path = os.tmpdir() + "/" + temp_id() + ".tmp"
-
         fs.writeFileSync(config_path, JSON.stringify(v2c.v2c({
-            data: datavmess,
-            dns: [config.dns],
+            config: configjson,
+            dns: config.dns,
             listen: config.host,
             port: config.port
         })))
@@ -93,17 +93,23 @@ async function start(url, cb) {
                 : __dirname;
         await cmd(basicURL + "/bin/rocketv2ray", "run -format=json -c " + config_path)
         if (config.vpn) {
-            await cmd(basicURL + "/bin/tun2socks", "-device tun://" + tun + " -proxy socks5://" + config.host + ":" + config.port)
+            await cmd(basicURL + "/bin/tun2socks", "-tcp-auto-tuning -device tun://" + tun + " -proxy socks5://" + config.host + ":" + config.port)
             await cmd('netsh', `interface ip set address name="${tun}" static address=${config.address} mask=255.255.255.0 gateway=${config.gateway}`)
-            await cmd('netsh', `interface ip set dns name="${tun}" static ${config.dns}`)
+            await cmd('netsh', `interface ip set dns name="${tun}" static address=${config.dns[0]} validate=no`)
+            await cmd('netsh', `interface ip add dnsserver name="${tun}" address=${config.dns[1]} index=2 validate=no`)
             fs.unlinkSync(config_path);
-            await connect()
             await delay(4000)
+            await connect()
+        } else {
+            await delay(100)
+            fs.unlinkSync(config_path);
         }
+
         if (cb) {
             cb()
         }
     } catch (error) {
+        console.log(error)
         await stop();
         cb(error)
     }
@@ -142,6 +148,14 @@ function deleteroute(dest) {
 function addroute(dest, src, metric = "") {
     return cmd('route', `add ${dest} ${src} ${metric != "" ? 'metric ' + metric : ''}`)
 }
+async function lookupPromise(address) {
+    return new Promise((resolve, reject) => {
+        dns.lookup(address, (err, address, family) => {
+            if (err) reject(err);
+            resolve(address);
+        });
+    });
+};
 
 
 //=================================================================== before exit

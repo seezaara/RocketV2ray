@@ -1,7 +1,7 @@
 const urlparse = require('url');
 const querystring = require('querystring');
 
-const baseConfig = '{"log":{"access":"","error":"","loglevel":"none"},"inbounds":[{"tag":"proxy","port":58694,"listen":"127.0.0.1","protocol":"socks","sniffing":{"enabled":true,"destOverride":["http","tls"]},"settings":{"auth":"noauth","udp":true,"ip":null,"address":null,"clients":null},"streamSettings":null}],"outbounds":[{"tag":"proxy","protocol":"","settings":{"vnext":[{"users":[{"security":"auto"}]}],"servers":null,"response":null},"streamSettings":{"network":"tcp","security":null,"tlsSettings":{"allowInsecure":true,"fingerprint":"randomized"},"kcpSettings":{"mtu":1350,"tti":50,"uplinkCapacity":12,"downlinkCapacity":100,"congestion":false,"readBufferSize":2,"writeBufferSize":2,"header":{"type":"wechat-video"}},"wsSettings":{"connectionReuse":true,"path":"/path","headers":{"Host":"host.host.host"}},"httpSettings":{"host":["host.com"],"path":"/host"},"quicSettings":{"security":"none","key":"","header":{"type":"none"}},"tcpSettings":{"connectionReuse":true,"header":{"type":"http","request":{"version":"1.1","method":"GET","path":["/"],"headers":{"Host":[""],"User-Agent":["Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.75 Safari/537.36","Mozilla/5.0 (iPhone; CPU iPhone OS 10_0_2 like Mac OS X) AppleWebKit/601.1 (KHTML, like Gecko) CriOS/53.0.2785.109 Mobile/14A456 Safari/601.1.46"],"Accept-Encoding":["gzip, deflate"],"Connection":["keep-alive"],"Pragma":"no-cache"}}}}},"mux":{"enabled":false}},{"tag":"direct","protocol":"freedom"}],"stats":{},"dns":{},"routing":{"domainStrategy":"AsIs","rules":[]}}';
+const baseConfig = '{"log":{"access":"","error":"","loglevel":"none"},"inbounds":[{"tag":"proxy","port":10808,"listen":"127.0.0.1","protocol":"socks","sniffing":{"enabled":true,"destOverride":["http","tls"]},"settings":{"auth":"noauth","udp":true,"ip":null,"address":null,"clients":null},"streamSettings":null}],"outbounds":[{"tag":"proxy","protocol":"","settings":{"vnext":[{"users":[{"security":"auto"}]}],"servers":null,"response":null},"streamSettings":{"network":"tcp","security":null,"tlsSettings":{"allowInsecure":true,"fingerprint":"randomized"},"kcpSettings":{"mtu":1350,"tti":50,"uplinkCapacity":12,"downlinkCapacity":100,"congestion":false,"readBufferSize":2,"writeBufferSize":2,"header":{"type":"wechat-video"}},"wsSettings":{"connectionReuse":true,"path":"/","headers":{"Host":""}},"httpSettings":{"host":[""],"path":"/"},"quicSettings":{"security":"none","key":"","header":{"type":"none"}},"tcpSettings":{"connectionReuse":true,"header":{"type":"http","request":{"version":"1.1","method":"GET","path":["/"],"headers":{"Host":[""],"User-Agent":["Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.75 Safari/537.36","Mozilla/5.0 (iPhone; CPU iPhone OS 10_0_2 like Mac OS X) AppleWebKit/601.1 (KHTML, like Gecko) CriOS/53.0.2785.109 Mobile/14A456 Safari/601.1.46"],"Accept-Encoding":["gzip, deflate"],"Connection":["keep-alive"],"Pragma":"no-cache"}}}}},"mux":{"enabled":false}}],"stats":{},"dns":{"servers":["1.1.1.1","8.8.8.8"]},"routing":{"domainStrategy":"AsIs","rules":[]}}';
 
 function streamSettings(inp, data) {
     var config = {}
@@ -9,13 +9,15 @@ function streamSettings(inp, data) {
 
     if (data.tls) {
         config.security = data.tls;
-        if (data.sni)
-            inp.tlsSettings.serverName = data.sni;
-        else if (data.host)
-            inp.tlsSettings.serverName = data.host;
-        if (data.alpn)
-            inp.tlsSettings.alpn = data.alpn.split(",");
-        config[data.tls + "Settings"] = inp.tlsSettings
+        if (data.tls != "none") {
+            if (data.sni)
+                inp.tlsSettings.serverName = data.sni;
+            else if (data.host)
+                inp.tlsSettings.serverName = data.host;
+            if (data.alpn)
+                inp.tlsSettings.alpn = data.alpn.split(",");
+            config[data.tls + "Settings"] = inp.tlsSettings
+        }
     }
     if (data.net === 'kcp') {
         const { kcpSettings } = inp;
@@ -67,7 +69,7 @@ function vless(config, data) {
     vnext.port = +data.port;
     user.id = data.id;
     user.security = data.scy;
-    if (data.flow) user.encryption = data.enc;
+    if (data.enc) user.encryption = data.enc;
     if (data.flow) user.flow = data.flow;
     config.protocol = data.protocol;
     config.tag = data.ps;
@@ -103,14 +105,16 @@ function shadowSocks(config, data) {
 
 function socks(config, data) {
     delete config.settings.vnext;
-    config.settings.servers = [{ "users": [{}] }]
+    if (data.id || data.scy)
+        config.settings.servers = [{ "users": [{}] }]
+    else
+        config.settings.servers = [{}]
     const [servers] = config.settings.servers;
     servers.address = data.add;
     servers.port = +data.port;
-    servers.users[0].pass = data.id;
-    servers.users[0].user = data.scy;
+    if (data.id) servers.users[0].pass = data.id;
+    if (data.scy) servers.users[0].user = data.scy;
     servers.ota = false;
-    servers.password = "";
     config.protocol = "socks";
     config.tag = data.ps;
 }
@@ -160,7 +164,7 @@ function parseProtocol(url) {
                 host: netquery.host || "",
                 path: netquery.path || "/",
                 tls: netquery.security || "",
-                enc: netquery.encryption,
+                enc: netquery.encryption || "none",
                 sni: netquery.sni || "",
                 flow: netquery.flow || "",
                 alpn: netquery.alpn
@@ -170,24 +174,25 @@ function parseProtocol(url) {
             let parsed_url = urlparse.parse(decodeURIComponent(url));
             parsed_url.auth = Buffer.from(parsed_url.auth, 'base64').toString().split(":")
             return {
-                id: parsed_url.auth[1] || "",
                 protocol: protocol,
                 ps: parsed_url.hash.substring(1) || "none",
                 add: parsed_url.hostname || "none",
                 port: Number(parsed_url.port) || 0,
-                scy: parsed_url.auth[0] || "auto",
+                id: parsed_url.auth[1] == "null" ? "" : parsed_url.auth[1] || "",
+                scy: parsed_url.auth[0] == "null" ? "auto" : parsed_url.auth[0] || "auto",
                 net: "tcp"
             }
         } else if (protocol === "socks") {
             let parsed_url = urlparse.parse(decodeURIComponent(url));
+            console.log(Buffer.from(parsed_url.auth, 'base64').toString())
             parsed_url.auth = Buffer.from(parsed_url.auth, 'base64').toString().split(":")
             return {
-                id: parsed_url.auth[1] || "",
                 protocol: protocol,
                 ps: parsed_url.hash.substring(1) || "none",
                 add: parsed_url.hostname || "none",
                 port: Number(parsed_url.port) || 0,
-                scy: parsed_url.auth[0] || "auto",
+                id: parsed_url.auth[1] == "null" ? "" : parsed_url.auth[1] || "",
+                scy: parsed_url.auth[0] == "null" ? "" : parsed_url.auth[0] || "",
                 net: "tcp"
             }
         }
@@ -198,20 +203,38 @@ function parseProtocol(url) {
 
 }
 
-function vmess2config({ data, url, port, listen, dns }) {
-    if (!data) {
-        if (!url)
+
+function vmess2config({ config, data, url, port, listen, dns }) {
+    if (!config) {
+        if (!data) {
+            if (!url)
+                return false;
+            data = parseProtocol(url);
+        }
+        if (!data)
             return false;
-        data = parseProtocol(url);
+        config = outbound(data);
     }
-    if (!data)
-        return false;
-    var config = outbound(data);
-    const [inbound] = config.inbounds;
+    // ====================================
+    if (!config.inbounds)
+        config.inbounds = []
+    var inbound;
+    for (var i in config.inbounds) {
+        if (config.inbounds[i].protocol == "socks") {
+            inbound = config.inbounds[i];
+        }
+    }
+    if (!inbound) {
+        config.inbounds.push({ "protocol": "socks", "settings": { "auth": "noauth", "udp": true } })
+        inbound = config.inbounds[0]
+    }
+    // ====================================
+
     if (port) inbound.port = port;
     if (listen) inbound.listen = listen;
-    if (listen) inbound.settings.ip = listen;
-    if (dns) config.dns.servers = dns;
+    if (!config.dns)
+        config.dns = {};
+    if (dns && !config.dns.servers) config.dns.servers = dns;
     return config
 }
 
