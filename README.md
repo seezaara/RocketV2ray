@@ -12,7 +12,7 @@
 > برای استفاده از برنامه فقط کافیه لینک کانفیگ یا متن json کانفیگ رو کپی کنید و توی برنامه روی ایکون `+` کلیک کنید.
 و بعد کانفیگ توی لیست کانفیگ ها وارد شده و میتونید با کلیک کردن روش کانفیگ رو انتخاب کنید و دکمه استارت رو بزنید به همین راحتی :))
  
-**protocols support: **
+**protocols support:**
 
 - vmess
 - vless
@@ -50,7 +50,7 @@ TUN/TAP interface vpn application for window by electron base on v2ray core
 > To use the program, just copy the config link or the config json text and click on the `+` icon in the program.
 And then the configuration is entered in the configuration list and you can select the desired configuration by clicking on it and press the start button and you are ready to go :))
 
-**protocols support: **
+**protocols support:**
 
 - vmess
 - vless
