@@ -9,6 +9,18 @@
 # راهنمای فارسی
 نرم افزار Rocketv2ray یک وی پی ان v2ray برای ویندوز ساخته شده با الکترون بر اساس v2ray core
 
+> برای استفاده از برنامه فقط کافیه لینک کانفیگ یا متن json کانفیگ رو کپی کنید و توی برنامه روی ایکون `+` کلیک کنید.
+و بعد کانفیگ توی لیست کانفیگ ها وارد شده و میتونید با کلیک کردن روش کانفیگ رو انتخاب کنید و دکمه استارت رو بزنید به همین راحتی :))
+ 
+**protocols support: **
+
+- vmess
+- vless
+- trojan
+- shadowsocks
+- socks5
+
+
 # نصب بر روی ویندوز
 فقط به [صفحه انتشار](https://github.com/seezaara/RocketV2ray/releases/tag/RocketV2ray) بروید و آخرین نسخه را دانلود کنید و آن را نصب کنید
 
@@ -27,6 +39,18 @@
 
 # RocketV2ray
 TUN/TAP interface vpn application for window by electron base on v2ray core
+
+> To use the program, just copy the config link or the config json text and click on the `+` icon in the program.
+And then the configuration is entered in the configuration list and you can select the desired configuration by clicking on it and press the start button and you are ready to go :))
+
+**protocols support: **
+
+- vmess
+- vless
+- trojan
+- shadowsocks
+- socks5
+
 
 # install on window
 just go to [release page](https://github.com/seezaara/RocketV2ray/releases/tag/RocketV2ray) and download last version
