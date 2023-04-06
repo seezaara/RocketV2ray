@@ -23,7 +23,7 @@
 
 # نصب بر روی ویندوز
 
-لینک مستقیم اخرین نسخه رو میتونیتد از [اینجا](https://github.com/seezaara/RocketV2ray/releases/latest/download/Rocket.V2ray.Setup.exe) کپی کنید
+لینک مستقیم اخرین نسخه رو میتونیتد از [اینجا](https://github.com/seezaara/RocketV2ray/releases/latest/download/Rocket.V2ray.Setup.exe) دانلود کنید
 
 یا
 
@@ -61,7 +61,7 @@ And then the configuration is entered in the configuration list and you can sele
 
 # install on window
 
-You can copy the direct link of the latest version from [here](https://github.com/seezaara/RocketV2ray/releases/latest/download/Rocket.V2ray.Setup.exe).
+You can donwload the direct link of the latest version from [here](https://github.com/seezaara/RocketV2ray/releases/latest/download/Rocket.V2ray.Setup.exe).
 
 Or
 
