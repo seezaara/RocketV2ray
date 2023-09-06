@@ -1,7 +1,7 @@
 const fs = require("fs")
 const os = require("os")
-const v2c = require("./v2c")
-const c2v = require("./c2v")
+const tools = require("js2ray-tools")
+
 const dns = require('dns');
 const defaultGateway = require('default-gateway');
 const { spawn } = require('child_process');
@@ -76,9 +76,9 @@ async function start(configjson, cb) {
     try {
         if (!configjson)
             cb(false)
-        vpnadress = await lookupPromise(c2v.c2v(configjson, false).add)
+        vpnadress = await lookupPromise(tools.config2url(configjson, false).add)
         var config_path = os.tmpdir() + "/" + temp_id() + ".tmp"
-        fs.writeFileSync(config_path, JSON.stringify(v2c.v2c({
+        fs.writeFileSync(config_path, JSON.stringify(tools.url2config({
             config: configjson,
             dns: config.dns,
             listen: config.host,
@@ -116,7 +116,7 @@ async function start(configjson, cb) {
 }
 
 async function connect() {
-    await addroute(vpnadress, default_gateway, 1)
+    await addroute(vpnadress, default_gateway, 5)
     for (const i of config.handle) {
         await addroute(i, config.gateway, 5)
     }
@@ -145,13 +145,13 @@ async function stop(cb) {
 function deleteroute(dest) {
     return cmd('route', `delete ${dest}`)
 }
-function addroute(dest, src, metric = "") { 
+function addroute(dest, src, metric = "") {
     return cmd('route', `add ${dest} ${src} ${metric != "" ? 'metric ' + metric : ''}`)
 }
 async function lookupPromise(address) {
     // return address + " mask 255.255.255.255"
     return new Promise((resolve, reject) => {
-        dns.lookup(address, (err, address, family) => { 
+        dns.lookup(address, (err, address, family) => {
             if (err) reject(err);
             resolve(address);
         });
@@ -173,8 +173,7 @@ process.on('SIGUSR2', exitHandler.bind(null, { exit: true }));
 process.on('uncaughtException', exitHandler.bind(null, { exit: true }));
 
 module.exports = {
-    v2c,
-    c2v,
+    tools,
     init,
     start,
     stop
