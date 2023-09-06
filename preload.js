@@ -1,8 +1,10 @@
 const {
     contextBridge,
     ipcRenderer,
-    clipboard, shell
+    clipboard,
+    shell
 } = require("electron");
+
 const core = require('./core')
 const openExternal = shell.openExternal
 const api = ipcRenderer.invoke

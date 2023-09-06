@@ -13,7 +13,7 @@ function createWindow() {
             preload: __dirname + '/preload.js',
             nodeIntegration: true,
             contextIsolation: true,
-            devTools: true,
+            devTools: false,
         },
         autoHideMenuBar: true,
         frame: false,

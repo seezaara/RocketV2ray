@@ -5,7 +5,7 @@
 // if (typeof debugconfig[0] == "object") {
 //     var newconfig = {}
 //     for (const i in debugconfig) {
-//         newconfig[i] = JSON.stringify(core.v2c.v2c({ data: debugconfig[i] }))
+//         newconfig[i] = JSON.stringify(core.tools.url2config({ data: debugconfig[i] }))
 //     }
 //     localStorage.setItem("configs", JSON.stringify(newconfig))
 // }
@@ -165,7 +165,7 @@ window.$ = function (a) {
 async function add_config(a, must = false, issub) {
     try {
         if (a.trim()[0] == "{" && must) {
-            var config = core.v2c.v2c({ config: JSON.parse(a) })
+            var config = core.tools.url2config({ config: JSON.parse(a) })
             if (!config)
                 return log(lang.m1)
             add_config_storage(config)
@@ -176,7 +176,7 @@ async function add_config(a, must = false, issub) {
                     if (must && (url.startsWith("http://") || url.startsWith("https://"))) {
                         await add_subscription_storage(url.trim())
                     } else {
-                        var config = core.v2c.v2c({ url: url.trim() })
+                        var config = core.tools.url2config({ url: url.trim() })
                         if (!config)
                             return log(lang.m1)
                         add_config_storage(config, issub)
@@ -230,17 +230,20 @@ async function refresh_subscription() {
     localStorage.setItem("configs", JSON.stringify(configs))
     var subscriptions = get_subscription()
     var all = []
+    var count = 0
     for (const i in subscriptions) {
         const item = subscriptions[i]
         all.push(fetch(item).then(async function (data) {
-            if (data.status == 200)
+            if (data.status == 200) {
+                count++
                 return add_config(await data.text(), false, true)
+            }
         }).catch(function () {
             log(lang.m12)
         }))
     }
     await Promise.all(all)
-    return subscriptions.length
+    return count
 }
 
 
@@ -250,9 +253,8 @@ function add_config_storage(config, sub) {
     var configs = get_config()
     var key = Object.keys(configs)
     key = (parseInt(key[key.length - 1]) + 1) || 0
-    configs[key + (sub ? "s" : "")] = JSON.stringify(config)
+    configs[key + (sub ? "s" : "n")] = JSON.stringify(config)
     localStorage.setItem("configs", JSON.stringify(configs))
-
 }
 
 function remove_config(i) {
@@ -284,7 +286,7 @@ function config_share(ind, code) {
     if (code)
         return config
     else
-        return core.c2v.c2v(JSON.parse(config))
+        return core.tools.config2url(JSON.parse(config))
 }
 // =============================================
 function start(cb) {
@@ -316,7 +318,7 @@ var utils = {
     get_subscription,
     add_config,
     get_config,
-    get_data_format: core.c2v.c2v,
+    get_data_format: core.tools.config2url,
     remove_config,
     config_index,
     config_share,

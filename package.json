@@ -4,11 +4,12 @@
   "description": "v2ray base vpn for windows",
   "main": "index.js",
   "dependencies": {
-    "default-gateway": "^6.0.3"
+    "default-gateway": "^6.0.3",
+    "js2ray-tools": "^1.0.2"
   },
   "devDependencies": {
-    "electron": "^23.1.1",
-    "electron-builder": "^23.6.0"
+    "electron": "^26.1.0",
+    "electron-builder": "^24.6.4"
   },
   "scripts": {
     "dist": "electron-builder --x64",
@@ -32,6 +33,9 @@
     "portable": {
       "artifactName": "Rocket V2ray.exe"
     },
+    "files": [ 
+      "!core/bin/*"
+    ],
     "extraResources": [
       "core/bin/*"
     ]

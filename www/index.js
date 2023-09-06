@@ -52,7 +52,7 @@
     $(".refresh").addEventListener("click", async function () {
         if (cannot()) {
             return utils.log(lang.m11)
-        }
+        } 
         if (await utils.refresh_subscription()) {
             log(lang.m3, "done")
         }
