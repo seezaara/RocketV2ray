@@ -116,7 +116,7 @@ async function start(configjson, cb) {
 }
 
 async function connect() {
-    await addroute(vpnadress, default_gateway, 5)
+    await addroute(vpnadress, default_gateway, 1)
     for (const i of config.handle) {
         await addroute(i, config.gateway, 5)
     }
@@ -145,12 +145,13 @@ async function stop(cb) {
 function deleteroute(dest) {
     return cmd('route', `delete ${dest}`)
 }
-function addroute(dest, src, metric = "") {
+function addroute(dest, src, metric = "") { 
     return cmd('route', `add ${dest} ${src} ${metric != "" ? 'metric ' + metric : ''}`)
 }
 async function lookupPromise(address) {
+    // return address + " mask 255.255.255.255"
     return new Promise((resolve, reject) => {
-        dns.lookup(address, (err, address, family) => {
+        dns.lookup(address, (err, address, family) => { 
             if (err) reject(err);
             resolve(address);
         });

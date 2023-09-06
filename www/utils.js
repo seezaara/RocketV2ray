@@ -1,14 +1,14 @@
 
 //======================================== debug 
-var debugconfig = get_config()
-// ======================================== update database for old versions app 
-if (typeof debugconfig[0] == "object") {
-    var newconfig = {}
-    for (const i in debugconfig) {
-        newconfig[i] = JSON.stringify(core.v2c.v2c({ data: debugconfig[i] }))
-    }
-    localStorage.setItem("configs", JSON.stringify(newconfig))
-}
+// var debugconfig = get_config()
+// // ======================================== update database for old versions app 
+// if (typeof debugconfig[0] == "object") {
+//     var newconfig = {}
+//     for (const i in debugconfig) {
+//         newconfig[i] = JSON.stringify(core.v2c.v2c({ data: debugconfig[i] }))
+//     }
+//     localStorage.setItem("configs", JSON.stringify(newconfig))
+// }
 //========================================================================
 window.$ = function (a) {
     return document.querySelector(a)
@@ -162,36 +162,104 @@ window.$ = function (a) {
     }
 }()
 
-function add_config(a) {
+async function add_config(a, must = false, issub) {
     try {
-        if (a.trim()[0] == "{") {
+        if (a.trim()[0] == "{" && must) {
             var config = core.v2c.v2c({ config: JSON.parse(a) })
             if (!config)
                 return log(lang.m1)
+            add_config_storage(config)
         } else if (a.includes("://")) {
-            var config = core.v2c.v2c({ url: a })
-            if (!config)
-                return log(lang.m1)
+            for (var url of a.trim().split("\n")) {
+                url = url.trim()
+                if (url != "") {
+                    if (must && (url.startsWith("http://") || url.startsWith("https://"))) {
+                        await add_subscription_storage(url.trim())
+                    } else {
+                        var config = core.v2c.v2c({ url: url.trim() })
+                        if (!config)
+                            return log(lang.m1)
+                        add_config_storage(config, issub)
+                    }
+                }
+            }
         } else {
             return log(lang.m1)
         }
     } catch (error) {
         console.log(error)
-        return log(lang.m1)
+        log(lang.m1)
+        return false
     }
+    return true
+}
+async function add_subscription_storage(url) {
+    var subscriptions = get_subscription()
+    var key = Object.keys(subscriptions)
+    var values = Object.values(subscriptions)
+    if (!values.includes(url)) {
+        key = ((+key[key.length - 1]) + 1) || 0
+        subscriptions[key] = url
+        localStorage.setItem("subscriptions", JSON.stringify(subscriptions))
+    }
+    await refresh_subscription()
+}
+function remove_subscription(i) {
+    var subscriptions = get_subscription()
+    delete subscriptions[i]
+    localStorage.setItem("subscriptions", JSON.stringify(subscriptions))
+}
+
+function get_subscription() {
+    try {
+        return JSON.parse(localStorage.getItem("subscriptions") || "{}")
+    } catch (error) {
+        log(lang.m2)
+        localStorage.setItem("subscriptions", "{}")
+        return get_subscription()
+    }
+}
+
+async function refresh_subscription() {
+    var configs = utils.get_config()
+    for (const i in configs) {
+        if (i.slice(-1) == "s") {
+            delete configs[i]
+        }
+    }
+    localStorage.setItem("configs", JSON.stringify(configs))
+    var subscriptions = get_subscription()
+    var all = []
+    for (const i in subscriptions) {
+        const item = subscriptions[i]
+        all.push(fetch(item).then(async function (data) {
+            if (data.status == 200)
+                return add_config(await data.text(), false, true)
+        }).catch(function () {
+            log(lang.m12)
+        }))
+    }
+    await Promise.all(all)
+    return subscriptions.length
+}
+
+
+//================================================================
+
+function add_config_storage(config, sub) {
     var configs = get_config()
     var key = Object.keys(configs)
-    key = ((+key[key.length - 1]) + 1) || 0
-    configs[key] = JSON.stringify(config)
+    key = (parseInt(key[key.length - 1]) + 1) || 0
+    configs[key + (sub ? "s" : "")] = JSON.stringify(config)
     localStorage.setItem("configs", JSON.stringify(configs))
-    log(lang.m3, "done")
+
 }
+
 function remove_config(i) {
     var configs = get_config()
     delete configs[i]
     localStorage.setItem("configs", JSON.stringify(configs))
 }
-
 
 function get_config() {
     try {
@@ -202,6 +270,7 @@ function get_config() {
         return get_config()
     }
 }
+
 function config_index(ind) {
     if (ind != undefined) {
         localStorage.setItem("config_index", ind)
@@ -209,6 +278,7 @@ function config_index(ind) {
         return localStorage.getItem("config_index") || 0
     }
 }
+
 function config_share(ind, code) {
     var config = get_config()[ind]
     if (code)
@@ -241,6 +311,9 @@ function log(a, b) {
     mess(a, b)
 }
 var utils = {
+    refresh_subscription,
+    remove_subscription,
+    get_subscription,
     add_config,
     get_config,
     get_data_format: core.c2v.c2v,

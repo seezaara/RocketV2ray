@@ -3,17 +3,17 @@ var { app, BrowserWindow, ipcMain, Menu, Tray, screen } = require('electron')
 function createWindow() {
     var screen_size = screen.getPrimaryDisplay().workAreaSize
     const win = new BrowserWindow({
-        minWidth: 360,
-        minHeight: 600,
-        width: 360,
-        height: 600,
-        x: screen_size.width - 360 - 50,
-        y: screen_size.height - 600 - 40,
+        minWidth: 380,
+        minHeight: 640,
+        width: 380,
+        height: 640,
+        x: screen_size.width - 380 - 40,
+        y: screen_size.height - 640 - 30,
         webPreferences: {
             preload: __dirname + '/preload.js',
             nodeIntegration: true,
             contextIsolation: true,
-            devTools: false,
+            devTools: true,
         },
         autoHideMenuBar: true,
         frame: false,
@@ -22,6 +22,7 @@ function createWindow() {
     win.loadFile(__dirname + '/www/index.html')
 
     ipcMain.handle('close', function () { return win.close() })
+    ipcMain.handle('version', function () { return app.getVersion() })
 
 
     trayvar = new Tray(__dirname + '/www/icon.ico')

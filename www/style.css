@@ -76,17 +76,6 @@ html {
     background-color: red;
 }
 
-.add {
-    width: 25px;
-    height: 25px;
-    margin: 6px 15px;
-    margin-right: 0px;
-    -webkit-mask-image: url(./img/add.svg);
-    mask-image: url(./img/add.svg);
-    background-color: var(--icon);
-}
-
-
 
 .setting {
     width: 22px;
@@ -100,6 +89,37 @@ html {
 
 .setting:hover {
     background-color: rgb(227, 227, 227);
+}
+
+
+.add {
+    width: 25px;
+    height: 25px;
+    margin: 6px 15px;
+    margin-right: 0px;
+    -webkit-mask-image: url(./img/add.svg);
+    mask-image: url(./img/add.svg);
+    background-color: var(--icon);
+}
+
+.refresh {
+    width: 22px;
+    height: 22px;
+    margin: 6px 15px;
+    margin-right: 0px;
+    -webkit-mask-image: url(./img/refresh.svg);
+    mask-image: url(./img/add.svg);
+    background-color: var(--icon);
+}
+
+.subscription {
+    width: 22px;
+    height: 22px;
+    margin: 6px 15px;
+    margin-right: 0px;
+    -webkit-mask-image: url(./img/subscription.svg);
+    mask-image: url(./img/add.svg);
+    background-color: var(--icon);
 }
 
 .main {
@@ -192,8 +212,20 @@ html {
     visibility: hidden;
 }
 
+
 .active .test {
     visibility: visible;
+}
+
+.version {
+    position: absolute;
+    bottom: 10px;
+    left: 14px;
+    margin: auto;
+    font-size: 12px;
+    /* width: 100%; */
+    color: var(--icon);
+    text-decoration: underline;
 }
 
 /* // ======================================== items */
@@ -253,8 +285,8 @@ html {
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
-    padding: 0 15px;
-    font-size: 17px;
+    padding: 0 16px;
+    font-size: 16px;
     color: #aaaaaa;
     cursor: pointer;
 }
@@ -269,8 +301,18 @@ html {
 
 .title-ip {
     color: var(--icon);
-    height: 22px;
+    height: 21px;
     font-size: 14px;
+}
+
+.item.sub .item-sub {
+    position: absolute;
+    background-color: var(--icon);
+    width: 12px;
+    height: 12px;
+    margin: 8px 11px;
+    mask-image: url(./img/subscription.svg);
+    -webkit-mask-image: url(./img/subscription.svg);
 }
 
 .item-delete {

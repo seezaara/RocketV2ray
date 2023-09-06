@@ -1,5 +1,5 @@
 {
-    "m1": "Copied text could not be recognized. Please copy a json or config",
+    "m1": "The copied text could not be identified. Please copy a config or json or subscription link first",
     "m2": "There was a problem loading configs. All configs were deleted",
     "m3": "Config imported successfully",
     "m4": "Error activating the service",
@@ -9,5 +9,6 @@
     "m8": "Click to test",
     "m9": "Connected ping: ",
     "m10": "Please wait...",
-    "m11": "Please shut down the service and try again"
+    "m11": "Please shut down the service and try again",
+    "m12": "The subscription link did not open, try again"
 }

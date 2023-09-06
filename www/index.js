@@ -19,6 +19,7 @@
     var button_parent = $(".button_parent")
 
 
+
     load()
     function load() {
         var configs = utils.get_config()
@@ -27,8 +28,9 @@
         for (const i in configs) {
             var config = utils.get_data_format(JSON.parse(configs[i]), false)
             lists +=
-                `<div class="item ${ind == i ? "active" : ""}" data-ind="${i}">
+                `<div class="item ${i.slice(-1) == "s" ? "sub" : ""} ${ind == i ? "active" : ""}" data-ind="${i}">
             <div class="item-color"></div>
+            <div class="item-sub icon"></div>
             <div class="item-title fillf">
                 <div class="title-name">${config.ps}</div>
                 <div class="title-ip">${config.add}:${config.port}</div>
@@ -41,10 +43,27 @@
         $(".list").innerHTML = lists
 
     }
+    api("version").then(function (e) {
+        $(".version").innerHTML = "V" + e
+        $(".version").addEventListener("click", function () {
+            openExternal("https://github.com/seezaara/RocketV2ray/releases")
+        })
+    })
+    $(".refresh").addEventListener("click", async function () {
+        if (cannot()) {
+            return utils.log(lang.m11)
+        }
+        if (await utils.refresh_subscription()) {
+            log(lang.m3, "done")
+        }
+        load()
+    })
 
-    $(".add").addEventListener("click", function () {
+    $(".add").addEventListener("click", async function () {
         const text = clipboard.readText()
-        utils.add_config(text)
+        if (await utils.add_config(text, true)) {
+            log(lang.m3, "done")
+        }
         load()
     })
 
@@ -134,11 +153,58 @@
         }
     })
     // ==================================================
-
-    $(".setting").addEventListener("click", function () {
-        if (cannot()) {
-            return utils.log(lang.m11)
+    function subs_list() {
+        var subs = utils.get_subscription()
+        var lists = ""
+        for (const i in subs) {
+            lists +=
+                `<div class="item" data-ind="${i}">
+                    <div class="item-title fillf">
+                        <div class="title-name">${subs[i]}</div> 
+                    </div>
+                    <div class="item-delete icon" onclick="dialog_call(this)"></div>
+                </div>`
         }
+        return lists
+    }
+    $(".subscription").addEventListener("click", function () {
+        const lists = subs_list()
+        var p =
+            `<div style="width: 340px;">
+            <style>
+                .modal {
+                    background-color: var(--dialog) !important;
+                }
+        
+                .modal .material-icons {
+                    color: var(--icon);
+                }
+    
+                .modal {
+                    color: var(--text);
+                }
+    
+                .modal [dialog_close] {
+                    background-color: transparent;
+                }
+     
+            </style>
+            <div style="width: 30px;height: 30px;padding: 3px;margin: 15px;">
+                <span class="material-icons" dialog_close="">close</span>
+            </div>
+            <div class="erorrmessage"></div>
+            <div class="list fillf" style="margin: 15px; height:400px">${lists}</div>
+        </div> `
+
+        dialog(p, function (e) {
+            const item = e.parentNode
+            const list = item.parentNode
+            var ind = e.parentNode.getAttribute("data-ind")
+            remove_subscription(ind)
+            list.innerHTML = subs_list()
+        })
+    })
+    $(".setting").addEventListener("click", function () {
         var langs = ''
         for (var i of languages) {
             langs += '<option value="' + i + '"  ' + (userdata.language == i ? "selected" : '') + '>' + i + '</option>'
@@ -329,10 +395,14 @@
         </div> `
 
         dialog(p, function (e) {
+            event.preventDefault();
+            console.log(cannot())
+            if (cannot()) {
+                return utils.log(lang.m11)
+            }
             if (e.value == "reset setting") {
                 localStorage.removeItem("userdata")
             } else {
-                event.preventDefault();
                 var data = new FormData(e)
                 var object = {};
                 data.forEach((value, key) => {
