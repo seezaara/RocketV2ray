@@ -176,7 +176,7 @@ async function add_config(a, must = false, issub) {
                     if (must && (url.startsWith("http://") || url.startsWith("https://"))) {
                         await add_subscription_storage(url.trim())
                     } else {
-                        var config = core.tools.url2config({ url: url.trim() })
+                        var config = core.tools.url2config({ url: url.trim() }) 
                         if (!config)
                             return log(lang.m1)
                         add_config_storage(config, issub)
@@ -236,7 +236,7 @@ async function refresh_subscription() {
         all.push(fetch(item).then(async function (data) {
             if (data.status == 200) {
                 count++
-                return add_config(await data.text(), false, true)
+                return add_config(subscription_text_parse(await data.text()), false, true)
             }
         }).catch(function () {
             log(lang.m12)
@@ -245,7 +245,16 @@ async function refresh_subscription() {
     await Promise.all(all)
     return count
 }
-
+// const subscription_text_regex = /(?<!(https|http|ftp)):\/\/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi
+function subscription_text_parse(text) {
+    if (!text.includes("://")) {
+        try {
+            text = atob(text)
+        } catch (error) {
+        }
+    } 
+    return text
+}
 
 //================================================================
 

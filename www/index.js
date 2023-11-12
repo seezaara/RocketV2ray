@@ -26,7 +26,7 @@
         var ind = utils.config_index()
         var lists = ""
         for (const i in configs) {
-            var config = utils.get_data_format(JSON.parse(configs[i]), false)
+            var config = utils.get_data_format(JSON.parse(configs[i]), false) 
             lists +=
                 `<div class="item ${i.slice(-1) == "s" ? "sub" : ""} ${ind == i ? "active" : ""}" data-ind="${i}">
             <div class="item-color"></div>
@@ -396,7 +396,6 @@
 
         dialog(p, function (e) {
             event.preventDefault();
-            console.log(cannot())
             if (cannot()) {
                 return utils.log(lang.m11)
             }

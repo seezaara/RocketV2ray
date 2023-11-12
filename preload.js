@@ -7,7 +7,7 @@ const {
 
 const core = require('./core')
 const openExternal = shell.openExternal
-const api = ipcRenderer.invoke
+const api = ipcRenderer.invoke 
 
 contextBridge.exposeInMainWorld("core", core);
 contextBridge.exposeInMainWorld("openExternal", openExternal);

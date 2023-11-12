@@ -11,9 +11,8 @@ function createWindow() {
         y: screen_size.height - 640 - 30,
         webPreferences: {
             preload: __dirname + '/preload.js',
-            nodeIntegration: true,
-            contextIsolation: true,
-            devTools: false,
+            nodeIntegration: true, 
+            devTools: !__dirname.includes("app.asar"),
         },
         autoHideMenuBar: true,
         frame: false,
