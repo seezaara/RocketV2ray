@@ -41,14 +41,14 @@ function init(cf) {
 const delay = ms => new Promise(res => setTimeout(res, ms));
 function cmd(program, flags, e) {
     return new Promise(function (resolve, reject) {
-        const child = spawn(program, flags.split(" "));
+        const child = spawn(program, flags.match(/("[^"]+"|[^\s"]+)/g));
         var ind = allchild.push(child) - 1
         if (e) {
             child.stdout.on('data', (chunk) => {
                 e(chunk + "");
             });
-            child.stdout.on('error', (chunk) => {
-                e(chunk + "");
+            child.stderr.on('data', (chunk) => {
+                e("Error in cmd:" + program + " " + flags + "\n" + chunk)
             });
         }
         child.on('close', function (e) {
@@ -57,9 +57,6 @@ function cmd(program, flags, e) {
                 resolve("")
             else
                 reject("Error in cmd:" + program + " " + flags + "\nexit with code :" + e)
-        });
-        child.stdout.once('error', (e) => {
-            reject("Error in cmd:" + program + " " + flags + "\n" + e)
         });
         child.stdout.once('data', resolve);
     });
@@ -93,7 +90,7 @@ async function start(configjson, cb) {
                 : __dirname;
         await cmd(basicURL + "/bin/rocketv2ray", "run -format=json -c " + config_path)
         if (config.vpn) {
-            await cmd(basicURL + "/bin/tun2socks", "-tcp-auto-tuning -device tun://" + tun + " -proxy socks5://" + config.host + ":" + config.port)
+            await cmd(basicURL + "/bin/tun2socks", "-loglevel warning -tcp-auto-tuning -device tun://" + tun + " -proxy socks5://" + config.host + ":" + config.port + " -tun-post-up \"echo 1\"")
             await cmd('netsh', `interface ip set address name="${tun}" static address=${config.address} mask=255.255.255.0 gateway=${config.gateway}`)
             await cmd('netsh', `interface ip set dns name="${tun}" static address=${config.dns[0]} validate=no`)
             await cmd('netsh', `interface ip add dnsserver name="${tun}" address=${config.dns[1]} index=2 validate=no`)
@@ -109,6 +106,11 @@ async function start(configjson, cb) {
             cb()
         }
     } catch (error) {
+        try {
+            disconnect()
+        } catch (error) {
+            console.log(error)
+        }
         console.log(error)
         await stop();
         cb(error)
