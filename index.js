@@ -11,15 +11,14 @@ function createWindow() {
         y: screen_size.height - 640 - 30,
         webPreferences: {
             preload: __dirname + '/preload.js',
-            nodeIntegration: true, 
+            nodeIntegration: true,
             devTools: !__dirname.includes("app.asar"),
         },
         autoHideMenuBar: true,
         frame: false,
     })
 
-    win.loadFile(__dirname + '/www/index.html')
-
+    win.loadFile(__dirname + '/www/index.html') 
     ipcMain.handle('close', function () { return win.close() })
     ipcMain.handle('version', function () { return app.getVersion() })
 

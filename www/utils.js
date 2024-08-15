@@ -164,11 +164,19 @@ window.$ = function (a) {
 
 async function add_config(a, must = false, issub) {
     try {
-        if (a.trim()[0] == "{" && must) {
+        if (a.trim()[0] == "[") {
+            for (var url of JSON.parse(a)) {
+                var config = core.tools.url2config({ config: url })
+                if (!config)
+                    return log(lang.m1)
+                add_config_storage(config, issub, true)
+            }
+        } else if (a.trim()[0] == "{") {
             var config = core.tools.url2config({ config: JSON.parse(a) })
             if (!config)
                 return log(lang.m1)
-            add_config_storage(config)
+            add_config_storage(config, issub, true)
+
         } else if (a.includes("://")) {
             for (var url of a.trim().split("\n")) {
                 url = url.trim()
@@ -176,7 +184,7 @@ async function add_config(a, must = false, issub) {
                     if (must && (url.startsWith("http://") || url.startsWith("https://"))) {
                         await add_subscription_storage(url.trim())
                     } else {
-                        var config = core.tools.url2config({ url: url.trim() }) 
+                        var config = core.tools.url2config({ url: url.trim() })
                         if (!config)
                             return log(lang.m1)
                         add_config_storage(config, issub)
@@ -223,7 +231,7 @@ function get_subscription() {
 async function refresh_subscription() {
     var configs = utils.get_config()
     for (const i in configs) {
-        if (i.slice(-1) == "s") {
+        if (i.slice(-2, -1) == "s") {
             delete configs[i]
         }
     }
@@ -252,17 +260,17 @@ function subscription_text_parse(text) {
             text = atob(text)
         } catch (error) {
         }
-    } 
+    }
     return text
 }
 
 //================================================================
 
-function add_config_storage(config, sub) {
+function add_config_storage(config, sub, custom) {
     var configs = get_config()
     var key = Object.keys(configs)
     key = (parseInt(key[key.length - 1]) + 1) || 0
-    configs[key + (sub ? "s" : "n")] = JSON.stringify(config)
+    configs[key + (sub ? "s" : "n") + (custom ? "c" : "n")] = JSON.stringify(config)
     localStorage.setItem("configs", JSON.stringify(configs))
 }
 

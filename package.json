@@ -1,11 +1,11 @@
 {
   "name": "RocketV2ray",
-  "version": "2.0.0",
+  "version": "2.0.2",
   "description": "v2ray base vpn for windows",
   "main": "index.js",
   "dependencies": {
     "default-gateway": "^6.0.3",
-    "js2ray-tools": "^1.0.2"
+    "js2ray-tools": "^1.0.4"
   },
   "devDependencies": {
     "electron": "^26.1.0",
@@ -33,7 +33,7 @@
     "portable": {
       "artifactName": "Rocket V2ray.exe"
     },
-    "files": [ 
+    "files": [
       "!core/bin/*"
     ],
     "extraResources": [

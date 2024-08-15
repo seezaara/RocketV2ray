@@ -28,9 +28,10 @@
         for (const i in configs) {
             var config = utils.get_data_format(JSON.parse(configs[i]), false) 
             lists +=
-                `<div class="item ${i.slice(-1) == "s" ? "sub" : ""} ${ind == i ? "active" : ""}" data-ind="${i}">
+                `<div class="item ${i.slice(-2, -1) == "s" ? "sub" : ""} ${i.slice(-1) == "c" ? "cus" : ""} ${ind == i ? "active" : ""}" data-ind="${i}">
             <div class="item-color"></div>
             <div class="item-sub icon"></div>
+            <div class="item-cus icon"></div>
             <div class="item-title fillf">
                 <div class="title-name">${config.ps}</div>
                 <div class="title-ip">${config.add}:${config.port}</div>
@@ -52,7 +53,7 @@
     $(".refresh").addEventListener("click", async function () {
         if (cannot()) {
             return utils.log(lang.m11)
-        } 
+        }
         if (await utils.refresh_subscription()) {
             log(lang.m3, "done")
         }
