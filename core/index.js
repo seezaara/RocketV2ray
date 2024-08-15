@@ -106,11 +106,6 @@ async function start(configjson, cb) {
             cb()
         }
     } catch (error) {
-        try {
-            disconnect()
-        } catch (error) {
-            console.log(error)
-        }
         console.log(error)
         await stop();
         cb(error)
@@ -133,15 +128,21 @@ async function disconnect() {
     }
 }
 async function stop(cb) {
-    for (var i = allchild.length - 1; i >= 0; i--) {
-        allchild[i].stdin.pause();
-        allchild[i].kill();
-    }
-    allchild = []
-
-    await disconnect()
-    if (cb) {
-        cb()
+    try {
+        for (var i = allchild.length - 1; i >= 0; i--) {
+            allchild[i].stdin.pause();
+            allchild[i].kill();
+        }
+        allchild = []
+        await disconnect()
+        if (cb) {
+            cb()
+        }
+    } catch (error) {
+        console.log(error)
+        if (cb) {
+            cb()
+        }
     }
 }
 function deleteroute(dest) {
