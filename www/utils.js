@@ -313,7 +313,7 @@ function start(cb) {
             cb(true)
             return log(lang.m5)
         }
-        core.start(JSON.parse(config), function (e) {
+        core.start(JSON.parse(config), function (e) { 
             if (e)
                 log(lang.m4)
             cb(e)

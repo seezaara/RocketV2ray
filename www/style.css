@@ -228,6 +228,10 @@ html {
     text-decoration: underline;
 }
 
+.version.update {
+    color: #4caf50;
+}
+
 /* // ======================================== items */
 
 
@@ -314,7 +318,8 @@ html {
     mask-image: url(./img/subscription.svg);
     -webkit-mask-image: url(./img/subscription.svg);
 }
-.item.cus  .item-cus {
+
+.item.cus .item-cus {
     position: absolute;
     background-color: var(--icon);
     width: 12px;

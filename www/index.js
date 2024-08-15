@@ -26,7 +26,7 @@
         var ind = utils.config_index()
         var lists = ""
         for (const i in configs) {
-            var config = utils.get_data_format(JSON.parse(configs[i]), false) 
+            var config = utils.get_data_format(JSON.parse(configs[i]), false)
             lists +=
                 `<div class="item ${i.slice(-2, -1) == "s" ? "sub" : ""} ${i.slice(-1) == "c" ? "cus" : ""} ${ind == i ? "active" : ""}" data-ind="${i}">
             <div class="item-color"></div>
@@ -44,10 +44,22 @@
         $(".list").innerHTML = lists
 
     }
-    api("version").then(function (e) {
-        $(".version").innerHTML = "V" + e
-        $(".version").addEventListener("click", function () {
-            openExternal("https://github.com/seezaara/RocketV2ray/releases")
+    api("version").then(function (mv) {
+        $(".version").innerHTML = "V" + mv
+        lastversion(function (e) { 
+            if (e != "" && mv != e) {
+                var div = document.createElement("span")
+                div.innerHTML = " -> UPDATE TO V" + e
+                $(".version").addEventListener("click", function () {
+                    openExternal("https://github.com/seezaara/RocketV2ray/releases/latest/download/Rocket.V2ray.Setup.exe")
+                })
+                $(".version").appendChild(div)
+                $(".version").classList.add("update")
+            } else {
+                $(".version").addEventListener("click", function () {
+                    openExternal("https://github.com/seezaara/RocketV2ray/releases")
+                })
+            }
         })
     })
     $(".refresh").addEventListener("click", async function () {
