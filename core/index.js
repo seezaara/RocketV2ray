@@ -1,12 +1,13 @@
 const fs = require("fs")
 const os = require("os")
-const tools = require("js2ray-tools")
+const tools = require("./js2ray-tools")
 
 const dns = require('dns');
 const defaultGateway = require('default-gateway');
-const { spawn } = require('child_process');
+const { spawn, execSync } = require('child_process');
 
 // =========================== var
+let lastGateway_client = "";
 var vpnadress = ""
 var default_gateway = ""
 var allchild = []
@@ -59,6 +60,7 @@ function cmd(program, flags, e) {
                 reject("Error in cmd:" + program + " " + flags + "\nexit with code :" + e)
         });
         child.stdout.once('data', resolve);
+        child.stderr.once('data', resolve);
     });
 }
 function temp_id() { // min and max included 
@@ -90,13 +92,18 @@ async function start(configjson, cb) {
                 : __dirname;
         await cmd(basicURL + "/bin/rocketv2ray", "run -format=json -c " + config_path)
         if (config.vpn) {
-            await cmd(basicURL + "/bin/tun2socks", "-loglevel warning -tcp-auto-tuning -device tun://" + tun + " -proxy socks5://" + config.host + ":" + config.port + " -tun-post-up \"echo 1\"")
+            await cmd(
+                basicURL + "/bin/tun2socks",
+                `-loglevel silent -device tun://${tun} -proxy socks5://${config.host}:${config.port}`
+            );
+            await delay(1000)
             await cmd('netsh', `interface ip set address name="${tun}" static address=${config.address} mask=255.255.255.0 gateway=${config.gateway}`)
             await cmd('netsh', `interface ip set dns name="${tun}" static address=${config.dns[0]} validate=no`)
             await cmd('netsh', `interface ip add dnsserver name="${tun}" address=${config.dns[1]} index=2 validate=no`)
             fs.unlinkSync(config_path);
-            await delay(4000)
             await connect()
+            await delay(4000)
+            lastGateway_client = getPhysicalGateway();
         } else {
             await delay(100)
             fs.unlinkSync(config_path);
@@ -129,6 +136,7 @@ async function disconnect() {
 }
 async function stop(cb) {
     try {
+        lastGateway_client = undefined
         for (var i = allchild.length - 1; i >= 0; i--) {
             allchild[i].stdin.pause();
             allchild[i].kill();
@@ -161,6 +169,41 @@ async function lookupPromise(address) {
     });
 };
 
+
+//=================================================================== safe reconnect
+ 
+
+setInterval(async () => {
+    try {
+        if (lastGateway_client) {
+            const newGateway_client = getPhysicalGateway();
+            if (newGateway_client && newGateway_client !== lastGateway_client) {
+                var newGateway = getPhysicalGateway(true);
+                // Update routes without stopping VPN
+                await addroute(vpnadress, newGateway, 5);
+
+                for (const ip of config.bypass) {
+                    await deleteroute(ip);
+                    await addroute(ip, newGateway, 5);
+                }
+
+                lastGateway_client = newGateway_client;
+                console.log("Routes updated for new gateway");
+            }
+        }
+    } catch (err) { }
+}, 5000);
+
+function getPhysicalGateway(gateway = false) {
+    const output = execSync("route print 0.0.0.0").toString();
+    const lines = output.split("\n").filter(l => l.includes("0.0.0.0") && !l.includes(config.gateway));
+
+    for (let line of lines) {
+        let parts = line.trim().split(/\s+/);
+        if (parts.length >= 4) return parts[gateway ? 2 : 3]; // gateway
+    }
+    return null
+}
 
 //=================================================================== before exit
 process.stdin.resume();
